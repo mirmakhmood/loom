@@ -1,26 +1,169 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf8f5;
+  --foreground: #1c1917;
+  --loom-linen: #faf8f5;
+  --loom-charcoal: #1c1917;
+  --loom-gold: #b8956a;
+  --loom-gold-dark: #9a7a52;
+  --loom-muted: #78716c;
+  --loom-border: #e7e5e4;
+  --loom-card: #ffffff;
+  --loom-sand: #f5f0e8;
+  --loom-espresso: #292524;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-loom-linen: var(--loom-linen);
+  --color-loom-charcoal: var(--loom-charcoal);
+  --color-loom-gold: var(--loom-gold);
+  --color-loom-gold-dark: var(--loom-gold-dark);
+  --color-loom-muted: var(--loom-muted);
+  --color-loom-border: var(--loom-border);
+  --color-loom-card: var(--loom-card);
+  --color-loom-sand: var(--loom-sand);
+  --color-loom-espresso: var(--loom-espresso);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cormorant);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.loom-gradient-hero {
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(184, 149, 106, 0.12), transparent),
+    radial-gradient(ellipse 60% 50% at 10% 80%, rgba(184, 149, 106, 0.08), transparent),
+    linear-gradient(to bottom, #ffffff, var(--loom-linen));
+}
+
+.loom-card-hover {
+  transition:
+    transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.loom-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 24px 48px -12px rgba(28, 25, 23, 0.14),
+    0 10px 20px -8px rgba(28, 25, 23, 0.08);
+}
+
+.font-display {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+/* Scroll reveal animations */
+.loom-reveal {
+  opacity: 0;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.loom-reveal-up { transform: translateY(32px); }
+.loom-reveal-down { transform: translateY(-32px); }
+.loom-reveal-left { transform: translateX(-32px); }
+.loom-reveal-right { transform: translateX(32px); }
+.loom-reveal-none { transform: none; }
+
+.loom-reveal-visible {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Hero staggered entrance */
+@keyframes loom-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loom-hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes loom-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loom-animate-fade-up {
+  animation: loom-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.loom-animate-scale-in {
+  animation: loom-scale-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.loom-hero-float {
+  animation: loom-hero-float 6s ease-in-out infinite;
+}
+
+.loom-delay-100 { animation-delay: 100ms; }
+.loom-delay-200 { animation-delay: 200ms; }
+.loom-delay-300 { animation-delay: 300ms; }
+.loom-delay-400 { animation-delay: 400ms; }
+.loom-delay-500 { animation-delay: 500ms; }
+.loom-delay-600 { animation-delay: 600ms; }
+
+/* Page enter */
+@keyframes loom-page-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loom-page-enter {
+  animation: loom-page-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Image load shimmer placeholder */
+.loom-img-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--loom-sand) 0%,
+    #ede8e0 50%,
+    var(--loom-sand) 100%
+  );
+  background-size: 200% 100%;
+  animation: loom-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes loom-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .loom-reveal { opacity: 1; transform: none; transition: none; }
+  .loom-animate-fade-up,
+  .loom-animate-scale-in,
+  .loom-hero-float,
+  .loom-page-enter { animation: none; }
 }
