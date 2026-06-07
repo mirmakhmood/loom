@@ -1,0 +1,86 @@
+name: Deploy Loom CRM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Kodni GitHub runner-ga yuklash
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Node.js muhitini sozlash
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. .env faylini yaratish va GitHub-ning o'zida Build qilish (Server qiynalmasligi uchun)
+      - name: Install dependencies & Build
+        env:
+          ENV_DATA: ${{ secrets.ENV_FILE }}
+        run: |
+          echo "$ENV_DATA" > .env
+          npm ci
+          npm run build
+
+      # 4. Tayyor build va konfiguratsiya fayllarini serverga xavfsiz nusxalash
+      - name: Copy build files to DigitalOcean
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ".next/,public/,package.json,package-lock.json,.env"
+          target: "/root/loom"
+
+      # 5. Serverga ulanib PM2-ni 3001-portda "loom" nomi bilan qayta ishga tushirish
+      - name: Restart application on port 3001
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/loom
+            npm install --production
+            
+            # Eski "loom" jarayoni bo'lsa o'chiramiz
+            pm2 delete loom || true
+            
+            # Loyihani aniq 3001-portda "loom" nomi bilan ishga tushiramiz
+            PORT=3001 pm2 start npm --name "loom" -- run start
+            
+            # PM2 sozlamalarini saqlaymiz
+            pm2 save
+
+      # 6. Telegram Bot orqali muvaffaqiyatli xabar yuborish
+      - name: Send Telegram Notification on Success
+        if: success()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🚀 Loom CRM muvaffaqiyatli deploy bo'ldi!
+            
+            Commit: "${{ github.event.head_commit.message }}"
+            Muallif: ${{ github.actor }}
+            Havola: https://github.com/${{ github.repository }}/actions
+
+      # 7. Agar xatolik bo'lsa Telegram-ga xabar yuborish
+      - name: Send Telegram Notification on Failure
+        if: failure()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ❌ Loom CRM deployida xatolik yuz berdi!
+            
+            Tekshirish uchun havola: https://github.com/${{ github.repository }}/actions
