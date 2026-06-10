@@ -10,7 +10,7 @@ export function HeroSection() {
             Ulgurji kiyim savdosi
           </p>
           <h1 className="loom-animate-fade-up loom-delay-100 font-display text-4xl font-semibold leading-[1.1] tracking-tight text-loom-charcoal sm:text-5xl lg:text-6xl">
-            Premium matolar va kiyimlar
+            Retake
           </h1>
           <p className="loom-animate-fade-up loom-delay-200 mt-2 font-display text-2xl font-medium text-loom-gold-dark sm:text-3xl">
             B2B hamkorlar uchun
