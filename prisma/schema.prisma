@@ -8,18 +8,83 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  role      String
-  createdAt DateTime @default(now())
+  id            Int        @id @default(autoincrement())
+  username      String     @unique
+  password      String
+  role          String
+  createdAt     DateTime   @default(now())
+  assignedLeads Lead[]     @relation("AssignedLeads")
+  leadNotes     LeadNote[]
+  tasks         Task[]     @relation("AssignedTasks")
+}
+
+model Company {
+  id        Int       @id @default(autoincrement())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  city      String?
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  contacts  Contact[]
+  leads     Lead[]
+}
+
+model Contact {
+  id        Int       @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String?
+  position  String?
+  notes     String?
+  companyId Int?
+  company   Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  leads     Lead[]
 }
 
 model Lead {
+  id           Int        @id @default(autoincrement())
+  name         String
+  phone        String
+  product      String
+  status       String     @default("Yangi")
+  notes        String?
+  companyId    Int?
+  company      Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  contactId    Int?
+  contact      Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  assignedToId Int?
+  assignedTo   User?      @relation("AssignedLeads", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
+  leadNotes    LeadNote[]
+  tasks        Task[]
+}
+
+model LeadNote {
   id        Int      @id @default(autoincrement())
-  name      String
-  phone     String
-  product   String
-  status    String   @default("Yangi")
+  content   String
+  leadId    Int
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+model Task {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String?
+  status       String    @default("Open")
+  dueDate      DateTime?
+  leadId       Int?
+  lead         Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  assignedToId Int
+  assignedTo   User      @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
 }

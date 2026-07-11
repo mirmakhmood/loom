@@ -2,17 +2,12 @@ import type { Metadata } from "next";
 import { CreateUserForm } from "@/app/components/CreateUserForm";
 import { DeleteUserButton } from "@/app/components/DeleteUserButton";
 import { requireAdmin } from "@/lib/auth";
+import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Xodimlar",
 };
-
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("uz-UZ", {
-    dateStyle: "medium",
-  }).format(date);
-}
 
 export default async function UsersPage() {
   const session = await requireAdmin();

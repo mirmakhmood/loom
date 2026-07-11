@@ -15,9 +15,9 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith("/admin/users") && session.role !== "Admin") {
-    const leadsUrl = new URL("/admin/leads", request.url);
-    leadsUrl.searchParams.set("error", "forbidden");
-    return NextResponse.redirect(leadsUrl);
+    const adminUrl = new URL("/admin", request.url);
+    adminUrl.searchParams.set("error", "forbidden");
+    return NextResponse.redirect(adminUrl);
   }
 
   return NextResponse.next();

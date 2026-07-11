@@ -6,20 +6,29 @@ const FILTERS = ["Hammasi", ...LEAD_STATUSES] as const;
 type LeadsStatusFilterProps = {
   activeStatus: string;
   counts: Record<string, number>;
+  mine?: boolean;
+  q?: string;
 };
 
 export function LeadsStatusFilter({
   activeStatus,
   counts,
+  mine = false,
+  q = "",
 }: LeadsStatusFilterProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {FILTERS.map((status) => {
         const isActive = activeStatus === status;
-        const href =
-          status === "Hammasi"
-            ? "/admin/leads"
-            : `/admin/leads?status=${encodeURIComponent(status)}`;
+        const params = new URLSearchParams();
+        if (status !== "Hammasi") {
+          params.set("status", status);
+        }
+        if (mine) params.set("mine", "1");
+        if (q) params.set("q", q);
+
+        const query = params.toString();
+        const href = query ? `/admin/leads?${query}` : "/admin/leads";
         const count = counts[status] ?? 0;
 
         return (

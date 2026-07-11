@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logoutUser } from "@/app/actions";
+import { AdminNav } from "@/app/components/AdminNav";
 import { requireAuth } from "@/lib/auth";
 
 export default async function AdminLayout({
@@ -14,31 +15,13 @@ export default async function AdminLayout({
     <div className="flex min-h-full flex-1">
       <aside className="flex w-64 shrink-0 flex-col border-r border-loom-border bg-white">
         <div className="border-b border-loom-border px-6 py-6">
-          <Link
-            href="/admin/leads"
-            className="text-xl font-semibold tracking-tight"
-          >
+          <Link href="/admin" className="text-xl font-semibold tracking-tight">
             Loom
           </Link>
           <p className="mt-1 text-xs text-loom-muted">CRM Dashboard</p>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1 px-4 py-6">
-          <Link
-            href="/admin/leads"
-            className="rounded-lg px-4 py-2.5 text-sm font-medium transition hover:bg-loom-linen"
-          >
-            Arizalar
-          </Link>
-          {isAdmin && (
-            <Link
-              href="/admin/users"
-              className="rounded-lg px-4 py-2.5 text-sm font-medium transition hover:bg-loom-linen"
-            >
-              Xodimlar
-            </Link>
-          )}
-        </nav>
+        <AdminNav isAdmin={isAdmin} />
 
         <div className="border-t border-loom-border px-4 py-6">
           <div className="mb-4 rounded-lg bg-loom-linen px-4 py-3">

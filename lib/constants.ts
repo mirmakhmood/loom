@@ -12,6 +12,14 @@ export const LEAD_STATUSES = [
 ] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
+export const TASK_STATUSES = ["Open", "Done"] as const;
+export type TaskStatus = (typeof TASK_STATUSES)[number];
+
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  Open: "Ochiq",
+  Done: "Bajarilgan",
+};
+
 export const PRODUCT_OPTIONS = [
   "Mato",
   "Triko",
@@ -28,4 +36,8 @@ export function isRole(value: string): value is Role {
 
 export function isLeadStatus(value: string): value is LeadStatus {
   return (LEAD_STATUSES as readonly string[]).includes(value);
+}
+
+export function isTaskStatus(value: string): value is TaskStatus {
+  return (TASK_STATUSES as readonly string[]).includes(value);
 }
